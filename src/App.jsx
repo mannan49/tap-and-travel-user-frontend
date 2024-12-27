@@ -8,32 +8,41 @@ import ProfilePage from "./pages/ProfilePage";
 import PaymentPage from "./pages/PaymentPage";
 import OTPVerification from "./components/auth/OTPVerification";
 import SeatSelectionPage from "./pages/SeatSelectionPage";
-// import ProtectedRoute from "./components/utils/ProtectedRoute";
+import ProtectedRoute from "./components/utils/ProtectedRoute";
 import Layout from "./components/utils/Layout";
-// import MapView from "./components/gps/MapView";
 import RiderMap from "./components/gps/RiderMap";
 import NotFoundPage from "./pages/NotFoundPage";
+import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
   return (
-    <div className="App">
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<DashboardContent />} />
-          <Route path="/companies" element={<CompaniesPage />} />
-          <Route path="/bookings" element={<BookingPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/payments/:id" element={<PaymentPage />} />
-          <Route path="/seat-selection/:id" element={<SeatSelectionPage />} />
-          <Route path="/map" element={<RiderMap />} />
-          <Route path="/buses" element={<DashboardContent />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Route>
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/otp-verification" element={<OTPVerification />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    </div>
+    <AuthProvider>
+      <div className="App">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<DashboardContent />} />
+            <Route path="/companies" element={<CompaniesPage />} />
+            <Route path="/bookings" element={<BookingPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/payments/:id" element={<PaymentPage />} />
+            <Route path="/seat-selection/:id" element={<SeatSelectionPage />} />
+            <Route path="/map" element={<RiderMap />} />
+            <Route path="/buses" element={<DashboardContent />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/otp-verification" element={<OTPVerification />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </div>
+    </AuthProvider>
   );
 }
 
