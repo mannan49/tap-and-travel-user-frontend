@@ -1,12 +1,16 @@
-import { configureStore } from "@reduxjs/toolkit";
-// import thunk from "redux-thunk";
-import userSliceReducer from "./userSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import busesReducer from './slices/busesSlice';
+import companiesReducer from './slices/companiesSlice';
+import userReducer from './slices/userSlice';
+import ticketsReducer from "./slices/ticketsSlice";
 
 const store = configureStore({
   reducer: {
-    user: userSliceReducer,
+    buses: busesReducer,
+    companies: companiesReducer,
+    user: userReducer,
+    tickets: ticketsReducer,
   },
-  //   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });
 
 export default store;

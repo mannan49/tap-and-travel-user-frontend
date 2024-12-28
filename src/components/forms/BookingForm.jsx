@@ -98,14 +98,15 @@ const BookingForm = () => {
             className="w-full"
           />
         </div>
-        <form onSubmit={handleSubmit} className="col-span-6  w-full">
+        <form onSubmit={handleSubmit} className="col-span-6 w-full">
           <div className="flex flex-col space-y-6 mt-4 px-4 py-10 bg-main shadow-md rounded-3xl lg:w-3/4 mx-auto">
-            <div className="flex items-center border border-ternary_light rounded-md p-2 bg-white">
+            {/* From City Dropdown */}
+            <div className="flex items-center border border-ternary_light rounded-full px-4 py-1 bg-white focus-within:ring-1 focus-within:ring-blue-500">
               <select
                 name="fromCity"
                 value={formData.fromCity}
                 onChange={handleInputChange}
-                className="w-full px-2 bg-transparent text-gray-700 placeholder-gray-400 focus:outline-none"
+                className="w-full px-2 bg-transparent text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-0"
               >
                 <option value="">Select from</option>
                 {cities.map((city, index) => (
@@ -117,12 +118,12 @@ const BookingForm = () => {
             </div>
 
             {/* To City Dropdown */}
-            <div className="flex items-center border border-ternary_light rounded-md p-2 bg-white">
+            <div className="flex items-center border border-ternary_light rounded-full px-4 py-1 bg-white focus-within:ring-1 focus-within:ring-blue-500">
               <select
                 name="toCity"
                 value={formData.toCity}
                 onChange={handleInputChange}
-                className="w-full px-2 bg-transparent text-gray-700 placeholder-gray-400 focus:outline-none"
+                className="w-full px-2 bg-transparent text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-0"
               >
                 <option value="">Select to</option>
                 {cities.map((city, index) => (
@@ -134,14 +135,14 @@ const BookingForm = () => {
             </div>
 
             {/* Date Input */}
-            <div className="flex items-center border border-ternary_light rounded-md p-2 bg-white">
+            <div className="flex items-center border border-ternary_light rounded-full px-4 py-1 bg-white focus-within:ring-2 focus-within:ring-blue-500">
               <input
                 type="date"
                 name="date"
                 value={formData.date}
                 onChange={handleInputChange}
                 min={new Date().toISOString().split("T")[0]}
-                className="w-full px-2 bg-transparent text-gray-700 placeholder-gray-400 focus:outline-none"
+                className="w-full px-2 bg-transparent text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-0"
                 required
               />
             </div>

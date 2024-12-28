@@ -1,118 +1,124 @@
+/* eslint-disable react/prop-types */
+import { useState } from "react";
 import { MdEdit } from "react-icons/md";
-import { FaRegEye } from "react-icons/fa";
+import { FaUserEdit } from "react-icons/fa";
+import { apiBaseUrl } from "../api/settings";
+import toast from "react-hot-toast";
+import { capitalizeFirstLetter } from "./HelperFunctions";
+import { useDispatch } from "react-redux";
+import { updateUserData } from "../../store/slices/userSlice";
+import ChangePasswordComponent from "../auth/ChangePasswordComponent";
 
-const ProfileCard = () => {
+const ProfileCard = ({ user }) => {
+  const dispatch = useDispatch();
+
+  const [editMode, setEditMode] = useState({
+    name: false,
+    email: false,
+    phoneNumber: false,
+  });
+
+  const [updatedData, setUpdatedData] = useState({
+    name: user.name,
+    email: user.email,
+    phoneNumber: user.phoneNumber,
+  });
+
+  const [isSaving, setIsSaving] = useState(false);
+  const handleEditToggle = (field) => {
+    setEditMode((prev) => ({ ...prev, [field]: !prev[field] }));
+  };
+
+  const handleCancel = (field) => {
+    setUpdatedData((prev) => ({ ...prev, [field]: user[field] }));
+    setEditMode((prev) => ({ ...prev, [field]: false }));
+    toast.info(`${capitalizeFirstLetter(field)} edit canceled.`);
+  };
+
+  const handleChange = (field, value) => {
+    setUpdatedData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = async (field) => {
+    setIsSaving(true);
+    try {
+      await dispatch(
+        updateUserData({
+          apiBaseUrl,
+          userId: user._id,
+          updatedFields: { [field]: updatedData[field] },
+        })
+      ).unwrap();
+
+      setEditMode((prev) => ({ ...prev, [field]: false }));
+      toast.success(`${capitalizeFirstLetter(field)} updated successfully.`);
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      toast.error("Failed to update profile.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
-    <div className="mt-4 w-full flex justify-center items-center">
-      {/* Image */}
-      <div className="h-56 w-72 absolute flex justify-center items-center">
-        <img
-          className="object-cover h-20 w-20 rounded-full"
-          src="https://images.unsplash.com/photo-1484608856193-968d2be4080e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2134&q=80"
-          alt="Profile"
-        />
-      </div>
-
-      {/* Card */}
-      <div className="h-56  mx-4 w-5/6 bg-primary rounded-3xl shadow-md sm:w-80 sm:mx-0">
-        {/* Header */}
-        <div className="h-1/2 w-full flex justify-between items-baseline px-3 py-5">
-          <h1 className="text-main">Profile</h1>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="white"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="1"
-              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-            />
-          </svg>
+    <div className="mt-4 flex justify-center items-center">
+      <div className="mx-4 w-full lg:w-1/2 bg-primary rounded-3xl shadow">
+        <div className="h-1/2 w-full flex justify-between items-center p-4">
+          <h1 className="text-main">Profile Settings</h1>
+          <FaUserEdit className="text-2xl text-white" />
         </div>
 
-        {/* Info Section */}
         <div className="bg-main w-full rounded-3xl flex flex-col justify-around items-center">
-          {/* Orders and Spent */}
-          <div className="w-full h-1/2 flex justify-between items-center px-3 pt-2">
-            <div className="flex flex-col justify-center items-center">
-              <h1 className="text-ternary text-xs">Orders</h1>
-              <h1 className="text-gray-600 text-sm">340</h1>
-            </div>
-            <div className="flex flex-col justify-center items-center">
-              <h1 className="text-ternary text-xs">Spent</h1>
-              <h1 className="text-gray-600 text-sm">$2,004</h1>
-            </div>
-          </div>
-
-          {/* User Info */}
-          <div className="w-full h-1/2 flex flex-col justify-center items-center">
-            <h1 className="text-gray-700 font-bold">Aqsa Jameel</h1>
-            <h1 className="text-ternary text-sm">New York, USA</h1>
-          </div>
-          <div>
-            <label htmlFor="edit-username" className="text-ternary text-sm">
-              Full Name
-            </label>
-            <div className="flex items-center border border-ternary_light rounded-md p-2 mb-4 bg-white ">
-              <input
-                type="text"
-                placeholder="Aqsa Jameel"
-                className="w-full px-2 bg-transparent text-gray-700 placeholder-gray-400 focus:outline-none"
-              />
-              <div className="px-1  flex justify-center items-center gap-1">
-                <MdEdit />
+          {["name", "email", "phoneNumber"].map((field) => (
+            <div key={field} className="w-full px-4 mb-4">
+              <label
+                htmlFor={`edit-${field}`}
+                className="text-ternary text-sm capitalize"
+              >
+                {field.replace(/([A-Z])/g, " $1")}
+              </label>
+              <div className="flex items-center border border-ternary_light rounded-full px-4 py-2 bg-white">
+                {editMode[field] ? (
+                  <input
+                    id={`edit-${field}`}
+                    type={field === "email" ? "email" : "text"}
+                    value={updatedData[field]}
+                    onChange={(e) => handleChange(field, e.target.value)}
+                    className="w-full px-2 bg-transparent text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-0"
+                  />
+                ) : (
+                  <span className="w-full px-2 text-gray-700">
+                    {updatedData[field]}
+                  </span>
+                )}
+                <div className="px-1 flex justify-center items-center gap-2">
+                  {editMode[field] ? (
+                    <>
+                      <button
+                        onClick={() => handleSave(field)}
+                        disabled={isSaving}
+                        className="text-green-500"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => handleCancel(field)}
+                        className="text-red-500"
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <MdEdit
+                      className="cursor-pointer"
+                      onClick={() => handleEditToggle(field)}
+                    />
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-          <div>
-            <label htmlFor="edit-username" className="text-ternary text-sm">
-              Email
-            </label>
-            <div className="flex items-center border border-ternary_light rounded-md p-2 mb-4 bg-white ">
-              <input
-                type="email"
-                placeholder="aqsajameel@gmail.com"
-                className="w-full px-2 bg-transparent text-gray-700 placeholder-gray-400 focus:outline-none"
-              />
-              <div className="px-1  flex justify-center items-center gap-1">
-                <MdEdit />
-              </div>
-            </div>
-          </div>
-          <div>
-            <label htmlFor="edit-username" className="text-ternary text-sm">
-              Password
-            </label>
-            <div className="flex items-center border border-ternary_light rounded-md p-2 mb-4 bg-white ">
-              <input
-                type="text"
-                placeholder="**********"
-                className="w-full px-2 bg-transparent text-gray-700 placeholder-gray-400 focus:outline-none"
-              />
-              <div className="px-1  flex justify-center items-center gap-1">
-                <FaRegEye />
-              </div>
-            </div>
-          </div>
-          <div>
-            <label htmlFor="edit-username" className="text-ternary text-sm">
-              Phone Number
-            </label>
-            <div className="flex items-center border border-ternary_light rounded-md p-2 mb-4 bg-white ">
-              <input
-                type="text"
-                placeholder="03132567891"
-                className="w-full px-2 bg-transparent text-gray-700 placeholder-gray-400 focus:outline-none"
-              />
-              <div className="px-1  flex justify-center items-center gap-1">
-                <MdEdit />
-              </div>
-            </div>
-          </div>
+          ))}
+      <ChangePasswordComponent />
         </div>
       </div>
     </div>

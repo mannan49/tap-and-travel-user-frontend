@@ -1,42 +1,17 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import CompanyCard from "../components/utils/CompanyCard";
-import axios from "axios";
-import { apiBaseUrl } from "../components/api/settings";
 import Loader from "../components/utils/Loader";
+import { useSelector } from "react-redux";
 
 const CompaniesPage = () => {
-  const [companies, setCompanies] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  useEffect(() => {
-    const fetchAdmins = async () => {
-      try {
-        const response = await axios.get(
-          `${apiBaseUrl}/admin/companies-information`
-        );
-        setCompanies(response.data);
-        setLoading(false);
-      } catch (error) {
-        setError("Failed to fetch Companies Information", error);
-        setLoading(false);
-      }
-    };
+  const companies = useSelector((state) => state.companies.data);
+  const status = useSelector((state) => state.companies.status);
 
-    fetchAdmins();
-  }, []);
-
-  if (loading) {
+  if (status === "loading") {
     return (
       <div className="flex items-center justify-center w-full">
         <Loader />;
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center w-full">
-        <div className="text-red-600">{error}</div>
       </div>
     );
   }

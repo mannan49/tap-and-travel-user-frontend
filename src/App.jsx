@@ -13,6 +13,7 @@ import Layout from "./components/utils/Layout";
 import RiderMap from "./components/gps/RiderMap";
 import NotFoundPage from "./pages/NotFoundPage";
 import { AuthProvider } from "./contexts/AuthContext";
+import OrderCard from "./components/utils/OrderCard";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             <Route path="/seat-selection/:id" element={<SeatSelectionPage />} />
             <Route path="/map" element={<RiderMap />} />
             <Route path="/buses" element={<DashboardContent />} />
+            <Route path="/rfid-card" element={<OrderCard />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
           <Route path="/signup" element={<Signup />} />

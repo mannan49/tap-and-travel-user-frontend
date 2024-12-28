@@ -2,65 +2,21 @@
 import { useEffect, useState } from "react";
 import BookingForm from "../forms/BookingForm";
 import RouteCard from "../utils/RouteCard";
-import { apiBaseUrl } from "../api/settings";
 import { useLocation } from "react-router-dom";
 import Loader from "../utils/Loader";
-import axios from "axios";
+import { useSelector } from "react-redux";
 
 const MainContent = () => {
-  const [buses, setBuses] = useState([]);
+  const buses = useSelector((state) => state.buses.data);
+  const companies = useSelector((state) => state.companies.data);
+  const status = useSelector((state) => state.buses.status);
+
   const [filteredBuses, setFilteredBuses] = useState([]);
-  const [companies, setCompanies] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState("All");
   const location = useLocation();
-  const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
   const [visibleBuses, setVisibleBuses] = useState([]);
 
-  useEffect(() => {
-    const fetchBuses = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`${apiBaseUrl}/bus`);
-        const data = await response.json();
-
-        // Filter buses with date of today or greater
-        const today = new Date().toISOString().split("T")[0];
-
-        // Filter buses with date of today or greater
-        const filteredData = data.filter((bus) => {
-          const busDate = new Date(bus.date).toISOString().split("T")[0];
-          return busDate >= today;
-        });
-
-        setBuses(filteredData);
-        setFilteredBuses(filteredData);
-        setVisibleBuses(filteredData.slice(0, 9));
-      } catch (error) {
-        console.error("Error fetching buses:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBuses();
-  }, []);
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      try {
-        const response = await axios.get(
-          `${apiBaseUrl}/admin/companies-information`
-        );
-        const companyNames = response.data.map((company) => company.company);
-        setCompanies(companyNames);
-      } catch (error) {
-        console.error("Error fetching company information:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCompanies();
-  }, []);
   useEffect(() => {
     let updatedBuses = [...buses];
 
@@ -71,13 +27,9 @@ const MainContent = () => {
     } else if (selectedFilter === "HighToLow") {
       updatedBuses.sort((a, b) => b.fare.actualPrice - a.fare.actualPrice);
     } else if (selectedFilter === "AscendingDate") {
-      updatedBuses.sort(
-        (a, b) => new Date(a.date.$date) - new Date(b.date.$date)
-      );
+      updatedBuses.sort((a, b) => new Date(a.date) - new Date(b.date));
     } else if (selectedFilter === "DescendingDate") {
-      updatedBuses.sort(
-        (a, b) => new Date(b.date.$date) - new Date(a.date.$date)
-      );
+      updatedBuses.sort((a, b) => new Date(b.date) - new Date(a.date));
     } else if (selectedFilter === "Today") {
       const today = new Date();
       const todayDate = today.toISOString().slice(0, 10);
@@ -124,15 +76,15 @@ const MainContent = () => {
             <option value="DescendingDate">Date (Descending)</option>
             <option value="Today">Today</option>
             {companies.map((company, index) => (
-              <option key={index} value={company}>
-                {company}
+              <option key={index} value={company.name}>
+                {company.name}
               </option>
             ))}
           </select>
         </div>
       </div>
 
-      {loading ? (
+      {status === "loading" ? (
         <Loader />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">

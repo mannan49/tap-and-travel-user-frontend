@@ -6,10 +6,11 @@ import toast from "react-hot-toast";
 import { loginUser } from "../api/AuthenticationApi";
 import Loader from "../utils/Loader";
 import { useDispatch } from "react-redux";
-import { loginUser as loginUserAction } from "../../store/userSlice";
+import { initializeStore } from "../../store/intializeStore";
 import { FaBus } from "react-icons/fa";
-import { RiRfidFill } from "react-icons/ri";
+// import { RiRfidFill } from "react-icons/ri";
 import { RiRfidLine } from "react-icons/ri";
+import { apiBaseUrl } from "../api/settings";
 
 function Login() {
   const navigate = useNavigate();
@@ -18,7 +19,6 @@ function Login() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
-  const [userId, setUserId] = useState(null);
   const [rfidCardNumber, setRfidCardNumber] = useState("");
 
   const useRFIDScanner = (onScan) => {
@@ -88,19 +88,13 @@ function Login() {
       if (result.success) {
         const { data } = result;
         window.localStorage.setItem("token", data.token);
-        setUserId(data.userId);
-        toast.success(data.message);
-        dispatch(
-          loginUserAction({
-            email: data.email,
-            password: data.password,
-            userId: data.userId,
-          })
-        );
+        await initializeStore(dispatch, apiBaseUrl);
         navigate("/");
+        toast.success(data.message);
       } else {
         toast.error(result.message);
       }
+     
     } catch (error) {
       console.error("Login error:", error.message);
       toast.error("Something went wrong. Please try again.");
@@ -108,7 +102,6 @@ function Login() {
       setIsLoading(false);
     }
   };
-  console.log(isScanning);
 
   return (
     <div className="px-4 lg:px-0 grid grid-cols-1 md:grid-cols-2 overflow-hidden h-screen bg-[url(https://images.unsplash.com/photo-1470115636492-6d2b56f9146d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8bGlnaHQlMjBuYXR1cmV8ZW58MHx8MHx8fDA%3D)] md:bg-none bg-main">

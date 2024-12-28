@@ -1,10 +1,6 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { FaPlane } from "react-icons/fa";
-import { apiBaseUrl } from "../api/settings";
-import { jwtDecode } from "jwt-decode";
-import Loader from "../utils/Loader";
 import {
   extractSeatNumber,
   formatDateToDayMonth,
@@ -14,76 +10,26 @@ import {
 } from "./HelperFunctions";
 
 const TicketCard = ({ filterType }) => {
-  const [ticketInfo, setTicketInfo] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const tickets = useSelector((state) => state.tickets.data);
+  const today = new Date().toISOString().split("T")[0];
+  const filteredTickets = tickets.filter((ticket) => {
+    const ticketDate = new Date(ticket.date).toISOString().split("T")[0];
+    if (filterType === "active") {
+      return ticketDate >= today; // Tickets for today or in the future
+    }
+    if (filterType === "completed") {
+      return ticketDate < today; // Tickets from the past
+    }
+    return true; // Show all tickets if no filter is applied
+  });
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const decodedToken = token ? jwtDecode(token) : null;
-    const userId = decodedToken?.sub;
-
-    const fetchTicketInformation = async () => {
-      try {
-        const response = await fetch(
-          `${apiBaseUrl}/ticket/user/information/${userId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        filterTickets(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const filterTickets = (tickets) => {
-      const today = new Date().toISOString().split("T")[0]; // 'YYYY-MM-DD'
-      let filteredTickets = [];
-
-      if (filterType === "active") {
-        // Filter for today or greater dates
-        filteredTickets = tickets.filter((ticket) => {
-          const ticketDate = new Date(ticket.date).toISOString().split("T")[0];
-          return ticketDate >= today;
-        });
-      } else if (filterType === "completed") {
-        // Filter for past tickets
-        filteredTickets = tickets.filter((ticket) => {
-          const ticketDate = new Date(ticket.date).toISOString().split("T")[0];
-          return ticketDate < today;
-        });
-      }
-
-      setTicketInfo(filteredTickets);
-    };
-
-    fetchTicketInformation();
-  }, [filterType]);
-
-  if (loading) {
-    return <Loader />;
-  }
-
-  if (error) {
-    return <p>Sorry! You Don&apos;t Have any Booked Ticket.</p>;
+  if (filteredTickets.length === 0) {
+    return <p>Sorry! You don&apos;t have any booked tickets.</p>;
   }
 
   return (
     <div className="flex flex-col md:grid grid-cols-3 items-center justify-center bg-center bg-cover">
-      {ticketInfo.map((ticket, index) => (
+      {filteredTickets.map((ticket, index) => (
         <div
           key={index}
           className="max-w-md w-full h-full mx-auto z-10 rounded-3xl"
@@ -99,14 +45,15 @@ const TicketCard = ({ filterType }) => {
                 <div className="flex-auto justify-evenly">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center my-1">
-                      <span className="mr-3 rounded-full bg-main w-8 h-8"></span>
-                      <h2 className="font-medium italic">
+                      <h2 className="font-medium italic ml-2">
                         {ticket?.adminName}
                       </h2>
                     </div>
-                    <div className="ml-auto text-secondary">A380</div>
+                    <div className="ml-auto text-secondary">
+                      {ticket.busDetails?.busNumber}
+                    </div>
                   </div>
-                  <div className="border-b border-dashed border-b-2 my-5"></div>
+                  <div className="border-dashed border-b-2 my-5"></div>
                   <div className="flex items-center">
                     <div className="flex flex-col">
                       <div className="flex-auto text-xs text-ternary my-1">

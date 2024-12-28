@@ -11,6 +11,7 @@ import { MdPayment, MdContactSupport } from "react-icons/md";
 import { VscTarget } from "react-icons/vsc";
 import { FaTicket, FaLocationDot } from "react-icons/fa6";
 import { LiaUserEditSolid } from "react-icons/lia";
+import { RiRfidLine } from "react-icons/ri";
 import Dropdown from "./Dropdown";
 
 const Navbar = () => {
@@ -54,6 +55,10 @@ const Navbar = () => {
             <FaTicket />
             <span>Tickets</span>
           </NavLink>
+          <NavLink to="/rfid-card" className="flex items-center gap-4">
+            <RiRfidLine />
+            <span>RFID Card</span>
+          </NavLink>
           <NavLink to="/companies" className="flex items-center gap-4">
             <BsBuildingsFill />
             <span>Companies</span>
@@ -90,6 +95,12 @@ const Navbar = () => {
                 <NavLink to="/bookings" className="flex items-center gap-4">
                   <FaTicket />
                   <span>Tickets</span>
+                </NavLink>
+              </li>
+              <li className="app-side-li">
+                <NavLink to="/rfid-card" className="flex items-center gap-4">
+                  <RiRfidLine />
+                  <span>RFID Card</span>
                 </NavLink>
               </li>
               <li className="app-side-li">
