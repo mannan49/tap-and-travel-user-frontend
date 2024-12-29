@@ -64,7 +64,7 @@ const Navbar = () => {
             <span>Companies</span>
           </NavLink>
           <NavLink to="/map" className="flex items-center gap-4">
-            <FaRoute />
+            <FaLocationDot />
             <span>GPS Tracking</span>
           </NavLink>
           <Dropdown />

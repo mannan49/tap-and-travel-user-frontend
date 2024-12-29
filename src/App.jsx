@@ -14,6 +14,9 @@ import RiderMap from "./components/gps/RiderMap";
 import NotFoundPage from "./pages/NotFoundPage";
 import { AuthProvider } from "./contexts/AuthContext";
 import OrderCard from "./components/utils/OrderCard";
+import AvailableNavigationBuses from "./components/gps/AvailableNavigationBuses";
+import RealTimeNavigationMap from "./components/gps/RealTimeMapNavigation";
+import UserMapNavigation from "./components/gps/UserMapNavigation";
 
 function App() {
   return (
@@ -32,9 +35,12 @@ function App() {
             <Route path="/companies" element={<CompaniesPage />} />
             <Route path="/bookings" element={<BookingPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/payments/:id" element={<PaymentPage />} />
+            <Route path="/payments/:busId" element={<PaymentPage />} />
             <Route path="/seat-selection/:id" element={<SeatSelectionPage />} />
-            <Route path="/map" element={<RiderMap />} />
+            <Route path="/map2" element={<RiderMap />} />
+            <Route path="/map" element={<AvailableNavigationBuses />} />
+            <Route path="/map/:busId" element={<RealTimeNavigationMap />} />
+            <Route path="/map/user/:busId" element={<UserMapNavigation />} />
             <Route path="/buses" element={<DashboardContent />} />
             <Route path="/rfid-card" element={<OrderCard />} />
             <Route path="*" element={<NotFoundPage />} />

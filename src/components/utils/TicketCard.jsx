@@ -24,7 +24,11 @@ const TicketCard = ({ filterType }) => {
   });
 
   if (filteredTickets.length === 0) {
-    return <p>Sorry! You don&apos;t have any booked tickets.</p>;
+    return (
+      <p className="text-center mt-2">
+        Sorry! You don&apos;t have any tickets.
+      </p>
+    );
   }
 
   return (
@@ -91,7 +95,7 @@ const TicketCard = ({ filterType }) => {
                       <div className="text-xs">{ticket.route?.endCity}</div>
                     </div>
                   </div>
-                  <div className="border-b border-dashed border-b-2 my-5 pt-5 relative">
+                  <div className=" border-dashed border-b-2 my-5 pt-5 relative">
                     <div className="absolute rounded-full w-5 h-5 bg-primary -mt-2 -left-2"></div>
                     <div className="absolute rounded-full w-5 h-5 bg-primary -mt-2 -right-2"></div>
                   </div>
@@ -121,7 +125,7 @@ const TicketCard = ({ filterType }) => {
                       </div>
                     </div>
                   </div>
-                  <div className="border-b border-dashed border-b-2 my-5 pt-5 relative">
+                  <div className="border-dashed border-b-2 my-5 pt-5 relative">
                     <div className="absolute rounded-full w-5 h-5 bg-primary -mt-2 -left-2"></div>
                     <div className="absolute rounded-full w-5 h-5 bg-primary -mt-2 -right-2"></div>
                   </div>

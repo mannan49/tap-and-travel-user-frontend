@@ -16,7 +16,7 @@ export const initializeStore = async (dispatch, apiBaseUrl) => {
             dispatch(fetchBuses(apiBaseUrl)).unwrap(),
             dispatch(fetchCompanies(apiBaseUrl)).unwrap(),
             dispatch(fetchUser({ apiBaseUrl, userId })).unwrap(),
-            dispatch(fetchTickets({ apiBaseUrl, userId, token })).unwrap(),
+            dispatch(fetchTickets({ userId })).unwrap(),
         ]);
     } catch (error) {
         console.error('Error initializing store:', error);

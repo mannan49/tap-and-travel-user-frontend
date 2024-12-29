@@ -5,9 +5,12 @@ import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Loader from "../utils/Loader";
 import { apiBaseUrl } from "../api/settings";
+import { initializeStore } from "../../store/intializeStore";
+import { useDispatch } from "react-redux";
 
 function OTPVerification() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [isLoading, setIsLoading] = useState(false);
   const inputRefs = useRef([]);
@@ -94,6 +97,7 @@ function OTPVerification() {
       if (response.ok) {
         const { message, token } = data;
         window.localStorage.setItem("token", token);
+        await initializeStore(dispatch, apiBaseUrl);
         toast.success(message);
         navigate("/");
       } else {
