@@ -19,7 +19,6 @@ const MainContent = () => {
 
   useEffect(() => {
     let updatedBuses = [...buses];
-
     if (selectedFilter === "All") {
       setFilteredBuses(updatedBuses);
     } else if (selectedFilter === "LowToHigh") {
@@ -84,7 +83,7 @@ const MainContent = () => {
         </div>
       </div>
 
-      {status === "loading" ? (
+      {status === "loading" || status == "idle" ? (
         <Loader />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">

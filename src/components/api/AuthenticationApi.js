@@ -20,7 +20,6 @@ export const loginUser = async (userData) => {
     });
 
     const data = await response.json(); // Parse the JSON directly
-    console.log("Parsed JSON data:", data);
 
     if (response.ok && data.token) {
       localStorage.setItem("token", data.token); // Store the token

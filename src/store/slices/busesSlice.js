@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { apiBaseUrl } from '../../components/api/settings';
 
-export const fetchBuses = createAsyncThunk('buses/fetchBuses', async (apiBaseUrl) => {
+export const fetchBuses = createAsyncThunk('buses/fetchBuses', async () => {
     const response = await axios.get(`${apiBaseUrl}/bus`);
 
     // Filter buses with dates of today or greater

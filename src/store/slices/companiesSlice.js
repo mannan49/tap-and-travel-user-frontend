@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { apiBaseUrl } from '../../components/api/settings';
 
-export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async (apiBaseUrl) => {
+export const fetchCompanies = createAsyncThunk('companies/fetchCompanies', async () => {
     const response = await axios.get(`${apiBaseUrl}/admin/companies-information`);
     return response.data;
 });
