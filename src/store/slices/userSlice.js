@@ -9,7 +9,7 @@ export const fetchUser = createAsyncThunk('user/fetchUser', async ({ userId }) =
 
 export const updateUserData = createAsyncThunk(
     'user/updateUserData',
-    async ({ apiBaseUrl, userId, updatedFields }) => {
+    async ({ userId, updatedFields }) => {
         const response = await axios.patch(`${apiBaseUrl}/user/update-profile`, {
             userId,
             ...updatedFields,

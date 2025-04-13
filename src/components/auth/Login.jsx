@@ -28,11 +28,11 @@ function Login() {
       const result = await loginUser(data);
 
       if (result.success) {
+        toast.success("Processing your login, please hold on...", {
+          duration: 3000,
+        });
         const { data } = result;
         window.localStorage.setItem("token", data?.token);
-        toast.success("Processing your login, please hold on...", {
-          duration: 5000,
-        });
         await initializeStore(dispatch);
         toast.success(data.message);
         navigate("/");

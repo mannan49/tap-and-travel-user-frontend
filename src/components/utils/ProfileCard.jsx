@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { MdEdit } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
-import { apiBaseUrl } from "../api/settings";
 import toast from "react-hot-toast";
 import { capitalizeFirstLetter } from "./HelperFunctions";
 import { useDispatch } from "react-redux";
@@ -44,7 +43,6 @@ const ProfileCard = ({ user }) => {
     try {
       await dispatch(
         updateUserData({
-          apiBaseUrl,
           userId: user._id,
           updatedFields: { [field]: updatedData[field] },
         })

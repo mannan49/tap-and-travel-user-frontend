@@ -16,10 +16,10 @@ const PaymentCard = () => {
   const buses = useSelector((state) => state.buses.data);
   const selectedBus = buses.find((bus) => bus._id === busId);
   const user = useSelector((state) => state.user.data);
+  const selectedSeats = location.state?.reservedSeats;
 
   const handlePaymentSuccess = async (paymentIntent) => {
     console.log("Payment succeeded:", paymentIntent);
-    const selectedSeats = location.state?.reservedSeats;
 
     if (!selectedSeats || selectedSeats.length === 0) {
       console.error("No seats selected.");
@@ -27,55 +27,51 @@ const PaymentCard = () => {
     }
 
     try {
-      for (const seat of selectedSeats) {
-        // Step 1: Update the seat status
-        console.log("Bus Data", selectedBus);
-        const seatUpdateBody = {
-          busId: selectedBus._id,
+      const seatUpdateBody = {
+        busId: selectedBus._id,
+        seatsData: selectedSeats.map((seat) => ({
           seatNumber: seat.seatNumber,
           booked: true,
           email: user.email,
           gender: seat.gender,
-        };
-        console.log(seatUpdateBody);
-
-        const seatUpdateResponse = await fetch(
-          `${apiBaseUrl}/bus/update-seat-status`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify(seatUpdateBody),
-          }
-        );
-
-        if (!seatUpdateResponse.ok) {
-          throw new Error(`Failed to update seat ${seat.seatNumber}.`);
+        })),
+      };
+      const seatUpdateResponse = await fetch(
+        `${apiBaseUrl}/bus/update-seat-status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(seatUpdateBody),
         }
-
-        // Step 2: Generate a ticket
-        const ticketBody = {
-          userId: user._id,
-          busId: selectedBus?._id,
-          seatNumber: seat.seatNumber,
-          travelDate: selectedBus?.date,
-        };
-
-        const result = await dispatch(generateTicket({ ticketBody })).unwrap();
-        console.log("Ticket generated successfully:", result);
-        await dispatch(fetchTickets({ userId: user._id })).unwrap();
-        toast.success("Ticket generated successfully!");
-        navigate("/bookings");
+      );
+      if (!seatUpdateResponse.ok) {
+        const error = await seatUpdateResponse.json();
+        throw new Error(error.message || "Seat update failed");
       }
-    } catch (err) {
-      console.error("Error generating ticket:", err);
-    }
+      const ticketBody = {
+        tickets: selectedSeats.map((seat) => ({
+          userId: user._id,
+          busId: selectedBus._id,
+          seatNumber: seat.seatNumber,
+        })),
+      };
 
-    const handleCancel = () => {
+      console.log("Ticket body", ticketBody);
+
+      const result = await dispatch(generateTicket(ticketBody)).unwrap();
+      console.log("Tickets generated successfully:", result);
+
+      await dispatch(fetchTickets({ userId: user._id })).unwrap();
+
+      toast.success("Tickets booked successfully!");
       navigate("/bookings");
-    };
+    } catch (err) {
+      console.error("Error during ticket booking:", err);
+      toast.error(err.message || "Something went wrong while booking.");
+    }
   };
 
   return (
@@ -91,7 +87,7 @@ const PaymentCard = () => {
           />
         </StripeWrapper>
       </div>
-      <OrderSummary className="rounded-xl" />
+      <OrderSummary className="rounded-xl" selectedSeats={selectedSeats} />
     </div>
   );
 };

@@ -5,9 +5,11 @@ import { pakistanCities } from "./data";
 import toast from "react-hot-toast";
 import { jwtDecode } from "jwt-decode";
 import Loader from "./Loader";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { updateUserData } from "../../store/slices/userSlice";
 
 const OrderCard = () => {
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user.data);
   const status = useSelector((state) => state.user.status);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -55,26 +57,18 @@ const OrderCard = () => {
       address: formData,
       RFIDCardStatus: "booked",
     };
-    console.log("Address Form Data", patchData);
 
     try {
-      const response = await fetch(`${apiBaseUrl}/user/update-profile`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(patchData),
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        toast.success("Your RFID Card will be delivered soon to your address.");
-        setIsModalOpen(false);
-      } else {
-        alert("Error updating profile: " + result.message);
-      }
+      await dispatch(
+        updateUserData({
+          userId: user?._id,
+          updatedFields: patchData,
+        })
+      ).unwrap();
+      toast.success("Your RFID Card will be delivered soon to your address.");
+      setIsModalOpen(false);
     } catch (error) {
-      alert("Error: " + error.message);
+      alert("An unknown error pccured");
     }
   };
 

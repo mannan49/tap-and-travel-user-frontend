@@ -1,8 +1,10 @@
 /* eslint-disable react/prop-types */
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { useNavigate,  useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { apiBaseUrl } from "../api/settings";
+import SeatLegend from "./SeatLegend";
+import SelectedSeat from "./SelectedSeat";
 
 const SeatSelection = () => {
   const navigate = useNavigate();
@@ -12,16 +14,15 @@ const SeatSelection = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentSeat, setCurrentSeat] = useState(null);
 
-  // Save busData to localStorage
   useEffect(() => {
     const fetchBusData = async () => {
       try {
         const response = await axios.get(`${apiBaseUrl}/bus/${id}`);
-        console.log("Response", response)
+        console.log("Response", response);
         setBusData(response.data);
       } catch (error) {
         console.error("Error fetching bus data:", error);
-        navigate("/"); 
+        navigate("/");
       }
     };
 
@@ -39,6 +40,7 @@ const SeatSelection = () => {
       setCurrentSeat(seat);
       setShowModal(true);
     }
+    console.log("Selected Seats",selectedSeats);
   };
 
   const handleInputChange = (field, value) => {
@@ -49,7 +51,7 @@ const SeatSelection = () => {
   };
 
   const handleConfirmSeat = () => {
-    if (currentSeat.name && currentSeat.gender) {
+    if (currentSeat.gender) {
       // Add the seat to selectedSeats
       setSelectedSeats((prevSeats) => [
         ...prevSeats,
@@ -61,14 +63,14 @@ const SeatSelection = () => {
       ]);
       setShowModal(false);
     } else {
-      alert("Please fill in both name and gender.");
+      alert("Please select passenger gender.");
     }
   };
 
   const handleProceedToPayment = () => {
     // Ensure all fields are filled
     const allFieldsFilled = selectedSeats.every(
-      (seat) => seat?.name && seat?.gender
+      (seat) => seat?.gender
     );
     if (allFieldsFilled) {
       navigate(`/payments/${id}`, { state: { reservedSeats: selectedSeats } });
@@ -77,14 +79,15 @@ const SeatSelection = () => {
     }
   };
 
-  const handleCancel = () => {
-    setBusData(null);
-    localStorage.removeItem("busData");
-    navigate("/");
+  const handleRemoveSeat = (seatNumberToRemove) => {
+    setSelectedSeats((prevSeats) =>
+      prevSeats.filter((seat) => seat.seatNumber !== seatNumberToRemove)
+    );
   };
 
   return (
-    <div className="flex justify-around items-start gap-4 mt-4 pb-8 mx-auto">
+    <div className="flex flex-col justify-around  items-start md:flex-row gap-4 mt-4 pb-8 mx-auto">
+      <SeatLegend />
       <div className="bg-primary py-2 px-6 rounded-lg">
         <h2 className="text-2xl text-white text-center font-bold mb-6">
           Bus Seat Booking
@@ -108,53 +111,30 @@ const SeatSelection = () => {
             return null;
           })}
         </div>
-
-        <button
-          onClick={handleCancel}
-          className="mt-8 px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700"
-        >
-          Cancel
-        </button>
       </div>
       {/* Selected Seat Forms */}
-      {selectedSeats.length > 0 && (
-        <div className="mt-6">
-          {selectedSeats.map((seat, index) => (
-            <div key={seat.seatNumber} className="mb-4 p-4 bg-gray-200 rounded">
-              <h3 className="font-bold mb-2">
-                Seat Number {parseInt(currentSeat.seatNumber.split("-")[1])}{" "}
-                Details
-              </h3>
-              <input
-                type="text"
-                placeholder="Name"
-                value={seat.name}
-                onChange={(e) =>
-                  handleInputChange(index, "name", e.target.value)
-                }
-                className="border p-2 rounded mb-2 w-full"
-              />
-              <select
-                value={seat.gender}
-                onChange={(e) =>
-                  handleInputChange(index, "gender", e.target.value)
-                }
-                className="border p-2 rounded w-full"
-              >
-                <option value="">Select Gender</option>
-                <option value="M">Male</option>
-                <option value="F">Female</option>
-              </select>
+      <div>
+        {selectedSeats.length > 0 && (
+          <div className="mt-6">
+            <div className="grid grid-cols-4 gap-4">
+              {selectedSeats.map((seat) => (
+                <SelectedSeat
+                  key={seat.seatNumber}
+                  gender={seat.gender}
+                  seatNumber={seat.seatNumber}
+                  onRemove={() => handleRemoveSeat(seat.seatNumber)}
+                />
+              ))}
             </div>
-          ))}
-          <button
-            onClick={handleProceedToPayment}
-            className="m-4 px-6 py-2 bg-primary text-white rounded-md hover:bg-blue-500"
-          >
-            Proceed to Payment Page
-          </button>
-        </div>
-      )}
+            <button
+              onClick={handleProceedToPayment}
+              className="m-4 px-6 py-2 bg-primary text-white rounded-2xl hover:bg-blue-500"
+            >
+              Proceed to Payment
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Modal for seat confirmation */}
       {showModal && currentSeat && (
@@ -163,16 +143,6 @@ const SeatSelection = () => {
             <h3 className="font-bold mb-4 text-center">
               To Confirm Seat # {parseInt(currentSeat.seatNumber.split("-")[1])}
             </h3>
-            <div className="mb-4">
-              <label className="block mb-2 text-sm">Name</label>
-              <input
-                type="text"
-                placeholder="Enter your name"
-                value={currentSeat.name || ""}
-                onChange={(e) => handleInputChange("name", e.target.value)}
-                className="border p-2 rounded w-full"
-              />
-            </div>
             <div className="mb-4">
               <label className="block mb-2 text-sm">Gender</label>
               <select
@@ -207,15 +177,23 @@ const SeatSelection = () => {
 };
 
 const Seat = ({ seat, onClick }) => {
-  const seatColor = seat.booked ? "bg-red-200" : "bg-gray-300";
+  let seatColor = "bg-gray-500";
+
+  if (seat.booked) {
+    seatColor =
+      seat?.gender?.toLowerCase() === "m" ? "bg-green-500" : "bg-pink-500";
+  }
+
   const seatCursor = seat.booked ? "cursor-not-allowed" : "cursor-pointer";
+  const seatNumber = parseInt(seat.seatNumber.split("-")[1]);
 
   return (
     <div
-      className={`w-12 h-12 flex items-center justify-center font-bold rounded ${seatColor} ${seatCursor}`}
-      onClick={onClick}
+      className={`w-12 h-12 flex items-center justify-center font-bold rounded text-white ${seatColor} ${seatCursor}`}
+      onClick={!seat.booked ? onClick : undefined}
     >
-      {seat.booked ? seat.gender : parseInt(seat.seatNumber.split("-")[1])}
+      {seatNumber}
+      {/* {seat.booked ? seat.gender : seatNumber} */}
     </div>
   );
 };
