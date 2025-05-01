@@ -6,7 +6,6 @@ import CompaniesPage from "./pages/CompaniesPage";
 import BookingPage from "./pages/BookingPage";
 import ProfilePage from "./pages/ProfilePage";
 import PaymentPage from "./pages/PaymentPage";
-import OTPVerification from "./components/auth/OTPVerification";
 import SeatSelectionPage from "./pages/SeatSelectionPage";
 import ProtectedRoute from "./components/utils/ProtectedRoute";
 import Layout from "./components/utils/Layout";
@@ -16,6 +15,10 @@ import OrderCard from "./components/utils/OrderCard";
 import AvailableNavigationBuses from "./components/gps/AvailableNavigationBuses";
 import RealTimeNavigationMap from "./components/gps/RealTimeMapNavigation";
 import UserMapNavigation from "./components/gps/UserMapNavigation";
+import ForgotOtpPage from "./pages/ForgotOtpPage";
+import ResetPassword from "./components/auth/ResetPassword";
+import ForgotEmail from "./components/auth/ForgotEmail";
+import SignupOtpPage from "./pages/SignupOtpPage";
 
 function App() {
   return (
@@ -44,8 +47,11 @@ function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Route>
         <Route path="/signup" element={<Signup />} />
-        <Route path="/otp-verification" element={<OTPVerification />} />
+        <Route path="/otp-verification" element={<SignupOtpPage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password/email" element={<ForgotEmail />} />
+        <Route path="/forgot-password/otp" element={<ForgotOtpPage />} />
+        <Route path="/forgot-password/reset" element={<ResetPassword />} />
       </Routes>
     </div>
   );

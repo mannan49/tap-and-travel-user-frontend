@@ -44,7 +44,7 @@ function Signup() {
       setIsLoading(true);
       const result = await signUpUser(data);
       if (result.success) {
-        const { email, message } = result.data;
+        const { message } = result.data;
         localStorage.setItem("email", email);
         toast.success(message);
         navigate("/otp-verification");

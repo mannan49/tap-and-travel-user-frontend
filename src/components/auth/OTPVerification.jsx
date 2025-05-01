@@ -1,19 +1,36 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { FaBus } from "react-icons/fa";
-import { NavLink, useNavigate } from "react-router-dom";
-import { useRef, useState } from "react";
+import { NavLink } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Loader from "../utils/Loader";
-import { apiBaseUrl } from "../api/settings";
-import { initializeStore } from "../../store/intializeStore";
-import { useDispatch } from "react-redux";
+import { sendOtp, verifyOtp } from "../api/AuthenticationApi";
 
-function OTPVerification() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+function OTPVerification({
+  apiUrl,
+  sendOtpApiUrl,
+  bottomMessage = "Already have an account? ",
+  onSuccess,
+  email,
+}) {
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [isLoading, setIsLoading] = useState(false);
   const inputRefs = useRef([]);
+  const [resendTimer, setResendTimer] = useState(6);
+  const [canResend, setCanResend] = useState(false);
+
+  useEffect(() => {
+    let timer;
+
+    if (resendTimer > 0) {
+      timer = setTimeout(() => setResendTimer((prev) => prev - 1), 1000);
+    } else {
+      setCanResend(true);
+    }
+
+    return () => clearTimeout(timer);
+  }, [resendTimer]);
 
   const handleKeyDown = (e, index) => {
     if (
@@ -81,27 +98,17 @@ function OTPVerification() {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${apiBaseUrl}/user/verify-otp`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: localStorage.getItem("email"),
-          otp: otpValue,
-        }),
+      const result = await verifyOtp({
+        apiUrl,
+        email,
+        otp: otpValue,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        const { message, token } = data;
-        window.localStorage.setItem("token", token);
-        await initializeStore(dispatch, apiBaseUrl);
-        toast.success(message);
-        navigate("/");
+      if (result.success) {
+        toast.success(result?.data?.message);
+        if (onSuccess) onSuccess(result);
       } else {
-        toast.error("OTP verification failed. Please try again.");
+        toast.error(result?.message);
       }
     } catch (error) {
       toast.error("An error occurred. Please try again.");
@@ -110,8 +117,26 @@ function OTPVerification() {
     }
   };
 
+  const handleResendOtp = async () => {
+    setIsLoading(true);
+    try {
+      const result = await sendOtp({ sendOtpApiUrl, email });
+      if (result.success) {
+        toast.success("A new OTP has been sent to your email.");
+        setResendTimer(60); // Restart timer
+        setCanResend(false);
+      } else {
+        toast.error(result?.message || "Failed to resend OTP.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while resending OTP.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="px-4 lg:px-0 grid grid-cols-1 md:grid-cols-2 overflow-hidden h-screen bg-main bg-[url('https://images.pexels.com/photos/4502111/pexels-photo-4502111.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')] lg:bg-none">
+    <div className="px-4 lg:px-0 grid grid-cols-1 md:grid-cols-2 overflow-hidden h-screen bg-main">
       <div className="hidden md:block">
         <img
           src="https://images.unsplash.com/photo-1543859184-17ac017dde53?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -156,16 +181,39 @@ function OTPVerification() {
             ))}
           </div>
 
+          <div className="flex justify-center items-center mb-4 text-sm">
+            <p
+              className={`mr-2 ${canResend ? "text-primary" : "text-gray-400"}`}
+            >
+              Resend Available in 00:{resendTimer.toString().padStart(2, "0")}{" "}
+              s,
+            </p>
+
+            {canResend ? (
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                className="text-primary font-semibold underline"
+              >
+                Resend OTP
+              </button>
+            ) : (
+              <span className="text-gray-400 font-semibold underline cursor-not-allowed">
+                Resend OTP
+              </span>
+            )}
+          </div>
+
           <button
             type="submit"
             className="w-full inline-flex justify-center whitespace-nowrap rounded-lg bg-primary px-3.5 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-950/10 hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 transition-colors duration-150"
             disabled={isLoading}
           >
-            {isLoading ? <Loader /> : "Verify Account"}
+            {isLoading ? <Loader /> : "Verify OTP"}
           </button>
 
           <h3 className="text-lg text-center mt-4">
-            Already have an account?{" "}
+            {bottomMessage}
             <NavLink to="/login" className="font-bold underline italic">
               Login Page
             </NavLink>

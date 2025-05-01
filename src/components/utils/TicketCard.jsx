@@ -54,7 +54,7 @@ const TicketCard = ({ filterType }) => {
                       </h2>
                     </div>
                     <div className="ml-auto text-secondary">
-                      {ticket.busDetails?.busNumber}
+                      {ticket?.busDetails?.busNumber}
                     </div>
                   </div>
                   <div className="border-dashed border-b-2 my-5"></div>
@@ -137,13 +137,13 @@ const TicketCard = ({ filterType }) => {
                     <div className="flex flex-col mx-auto">
                       <span>Class</span>
                       <div className="font-semibold">
-                        {ticket.busDetails.standard.toUpperCase()}
+                        {ticket?.busDetails?.standard.toUpperCase()}
                       </div>
                     </div>
                     <div className="flex flex-col">
                       <span>Seat</span>
                       <div className="font-semibold">
-                        {extractSeatNumber(ticket.seatNumber)}
+                        {extractSeatNumber(ticket?.seatNumber)}
                       </div>
                     </div>
                   </div>

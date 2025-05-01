@@ -1,46 +1,39 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import { loginUser } from "../api/AuthenticationApi";
-import Loader from "../utils/Loader";
+import { sendOtp } from "../api/AuthenticationApi";
+import { apiBaseUrl } from "../api/settings";
 import { FaBus } from "react-icons/fa";
-import { initializeStore } from "../../store/intializeStore";
-import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+import Loader from "../utils/Loader";
 
-function Login() {
+const ForgotEmail = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      setIsLoading(true);
-      if (!email || !password) {
-        toast.error("Please enter both email and password.");
-        setIsLoading(false);
-        return;
-      }
 
-      const data = { email, password };
-      const result = await loginUser(data);
+    if (!email) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await sendOtp({
+        sendOtpApiUrl: `${apiBaseUrl}/user/forgot-password/send-otp`,
+        email,
+      });
 
       if (result.success) {
-        toast.success("Processing your login, please hold on...", {
-          duration: 3000,
-        });
-        const { data } = result;
-        window.localStorage.setItem("token", data?.token);
-        await initializeStore(dispatch);
-        toast.success(data.message);
-        navigate("/");
+        toast.success(result?.data?.message || "OTP sent successfully!");
+        navigate("/forgot-password/otp", { state: { email } });
       } else {
-        toast.error(result.message);
+        toast.error(result.message || "Failed to send OTP.");
       }
     } catch (error) {
-      console.error("Login error:", error.message);
+      console.error("Send OTP Error:", error.message);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
@@ -68,9 +61,10 @@ function Login() {
               Tap & Travel
             </span>
           </div>
-          <h2 className="text-xl italic font-bold text-center mb-0.5">
+          <h2 className="text-xl italic font-bold text-center mb-4">
             Journey Bright, Day or Night
           </h2>
+
           <div className="mb-4 flex flex-col">
             <label htmlFor="email" className="font-bold text-lg">
               Email :
@@ -87,53 +81,30 @@ function Login() {
             />
           </div>
 
-          <div className="mb-4 flex flex-col">
-            <label htmlFor="password" className="font-bold text-lg">
-              Password :
-            </label>
-            <input
-              className="border-ternary_light border-solid border-2 rounded-full px-4 py-1 focus:border-primary focus:outline-none"
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Enter Your Password"
-            />
-          </div>
-
           <div className="mb-1">
             <button
-              className="bg-primary border-2 border-solid rounded-full px-4 py-1 text-main text-xl w-full"
               type="submit"
               disabled={isLoading}
+              className="bg-primary border-2 border-solid rounded-full px-4 py-1 text-main text-xl w-full"
             >
-              {isLoading ? <Loader /> : "Log In"}
+              {isLoading ? <Loader /> : "Send OTP"}
             </button>
           </div>
 
-          <div className="flex justify-between items-center my-2">
-            <h1 className="italic"> Don&apos;t have an account yet, then :-</h1>
+          <div className="flex gap-2 items-center mt-2">
+            <h1 className="italic">Remember Your Password, then </h1>
             <button
-              className="text-secondary font-bold underline italic"
               type="button"
-              onClick={() => navigate("/forgot-password/email")}
+              onClick={() => navigate("/login")}
+              className="underline italic"
             >
-              Forgot Password?
+              Login Page
             </button>
           </div>
-          <button
-            type="button"
-            className="bg-primary border-2 border-solid rounded-full px-4 py-1 text-main text-xl w-full"
-            onClick={() => navigate("/signup")}
-          >
-            Create Account
-          </button>
         </form>
       </div>
     </div>
   );
-}
+};
 
-export default Login;
+export default ForgotEmail;
