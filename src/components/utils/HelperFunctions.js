@@ -104,7 +104,7 @@ export function formatTime(inputTime) {
   // For other formats (e.g., ISO string, timestamp)
   const date = new Date(inputTime);
   if (isNaN(date)) {
-    throw new Error("Invalid input time format.");
+    return "";
   }
 
   const options = {
@@ -126,7 +126,7 @@ export function calcDuration(departure, arrival) {
     }
     const date = new Date(time);
     if (isNaN(date)) {
-      throw new Error("Invalid time format.");
+      return "";
     }
     return date;
   };

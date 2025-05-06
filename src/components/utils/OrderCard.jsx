@@ -91,11 +91,11 @@ const OrderCard = () => {
         {user.RFIDCardStatus === "booked" ? (
           <>
             <h1>
-              Your RFID Card Will Be Delivered Soon to {user.address.address}.
+              Your RFID Card Will Be Delivered Soon to {user?.address?.address}.
             </h1>
           </>
         ) : user.RFIDCardStatus === "delivered" ? (
-          <h1>Your RFID Card has been delivered to {user.address.address}.</h1>
+          <h1>Your RFID Card has been delivered to {user?.address?.address}.</h1>
         ) : (
           <h1>Order FREE RFID Card for our premier Services.</h1>
         )}

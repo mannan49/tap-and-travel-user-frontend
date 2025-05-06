@@ -21,7 +21,7 @@ const BookingForm = () => {
   useEffect(() => {
     const fetchBuses = async () => {
       try {
-        const response = await fetch(`${apiBaseUrl}/bus`);
+        const response = await fetch(`${apiBaseUrl}/bus/future`);
         const data = await response.json();
         setBuses(data);
 

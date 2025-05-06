@@ -1,22 +1,43 @@
-import { useSelector } from "react-redux";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiBaseUrl } from "../api/settings";
 
 const AvailableNavigationBuses = () => {
-  const tickets = useSelector((state) => state.tickets.data);
+  const [tickets, setTickets] = useState([]);
   const navigate = useNavigate();
 
-  // Get today's date in YYYY-MM-DD format
-  const today = new Date().toISOString().split("T")[0];
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const decoded = jwtDecode(token);
+        const userId = decoded?.sub;
 
-  // Filter tickets for today or future dates
-  const upcomingTickets = tickets.filter((ticket) => {
-    const ticketDate = new Date(ticket.date).toISOString().split("T")[0];
-    return ticketDate >= today;
-  });
+        const response = await axios.get(
+          `${apiBaseUrl}/ticket/user/information/${userId}?checkUptoEndDate=true`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setTickets(response.data.active || []);
+      } catch (error) {
+        console.error("❌ Error fetching tickets locally:", error);
+      }
+    };
+
+    fetchTickets();
+  }, []);
+
+
 
   return (
     <div className="flex flex-col space-y-4">
-      {upcomingTickets.map((ticket, index) => (
+      {tickets.map((ticket, index) => (
         <div
           key={index}
           className="flex flex-col lg:flex-row bg-white shadow-md rounded-lg p-4 items-start lg:items-center"
@@ -57,7 +78,7 @@ const AvailableNavigationBuses = () => {
           </div>
         </div>
       ))}
-      {upcomingTickets.length === 0 && (
+      {tickets.length === 0 && (
         <div className="text-center text-gray-500">
           No bus available for Navigation.
         </div>

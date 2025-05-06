@@ -3,7 +3,7 @@ import axios from 'axios';
 import { apiBaseUrl } from '../../components/api/settings';
 
 export const fetchBuses = createAsyncThunk('buses/fetchBuses', async () => {
-    const response = await axios.get(`${apiBaseUrl}/bus`);
+    const response = await axios.get(`${apiBaseUrl}/bus/future`);
 
     // Filter buses with dates of today or greater
     const today = new Date().toISOString().split('T')[0];

@@ -11,17 +11,12 @@ import {
 
 const TicketCard = ({ filterType }) => {
   const tickets = useSelector((state) => state.tickets.data);
-  const today = new Date().toISOString().split("T")[0];
-  const filteredTickets = tickets.filter((ticket) => {
-    const ticketDate = new Date(ticket.date).toISOString().split("T")[0];
-    if (filterType === "active") {
-      return ticketDate >= today; // Tickets for today or in the future
-    }
-    if (filterType === "completed") {
-      return ticketDate < today; // Tickets from the past
-    }
-    return true; // Show all tickets if no filter is applied
-  });
+  const filteredTickets =
+    filterType === "active"
+      ? tickets?.active || []
+      : filterType === "completed"
+      ? tickets?.past || []
+      : [];
 
   if (filteredTickets.length === 0) {
     return (
@@ -67,9 +62,9 @@ const TicketCard = ({ filterType }) => {
                         <span>{formatDateToDayMonth(ticket?.date)}</span>
                       </div>
                       <div className="w-full flex-none text-lg text-secondary font-bold leading-none">
-                        {getCityShortForm(ticket.route.startCity)}
+                        {getCityShortForm(ticket?.route?.startCity)}
                       </div>
-                      <div className="text-xs">{ticket.route?.startCity}</div>
+                      <div className="text-xs">{ticket?.route?.startCity}</div>
                     </div>
                     <div className="flex flex-col mx-auto">
                       <img
@@ -84,15 +79,15 @@ const TicketCard = ({ filterType }) => {
                       <div className="flex-auto text-xs text-ternary my-1">
                         <span className="mr-1">
                           {ticket?.date
-                            ? getDayShortName(new Date(ticket.date))
+                            ? getDayShortName(new Date(ticket?.date))
                             : "N/A"}
                         </span>
-                        <span>{formatDateToDayMonth(ticket.date)}</span>
+                        <span>{formatDateToDayMonth(ticket?.date)}</span>
                       </div>
                       <div className="w-full flex-none text-lg text-secondary font-bold leading-none">
-                        {getCityShortForm(ticket.route.endCity)}
+                        {getCityShortForm(ticket?.route?.endCity)}
                       </div>
-                      <div className="text-xs">{ticket.route?.endCity}</div>
+                      <div className="text-xs">{ticket?.route?.endCity}</div>
                     </div>
                   </div>
                   <div className=" border-dashed border-b-2 my-5 pt-5 relative">

@@ -40,7 +40,13 @@ export const generateTicket = createAsyncThunk(
 
 const ticketsSlice = createSlice({
   name: "tickets",
-  initialState: { data: [], status: "idle" },
+  initialState: {
+    data: {
+      active: [],
+      past: [],
+    },
+    status: "idle",
+  },
   reducers: {},
   extraReducers: (builder) => {
     builder

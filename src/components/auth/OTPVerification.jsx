@@ -138,11 +138,13 @@ function OTPVerification({
   return (
     <div className="px-4 lg:px-0 grid grid-cols-1 md:grid-cols-2 overflow-hidden h-screen bg-main">
       <div className="hidden md:block">
-        <img
-          src="https://images.unsplash.com/photo-1543859184-17ac017dde53?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-          className="object-cover w-full h-full"
-          alt="signup-illustration"
-        />
+        <div className="h-full flex justify-center items-center">
+          <img
+            src="https://www.freeiconspng.com/uploads/bus-png-4.png"
+            className="object-cover w-full h-1/2"
+            alt="quiz-mine"
+          />
+        </div>
       </div>
 
       <div className="flex justify-center max-h-screen">
