@@ -90,7 +90,7 @@ function ResetPassword() {
         <div className="h-full flex justify-center items-center">
           <img
             src="https://www.freeiconspng.com/uploads/bus-png-4.png"
-            className="object-cover w-full h-1/2"
+            className="object-cover w-full"
             alt="quiz-mine"
           />
         </div>
