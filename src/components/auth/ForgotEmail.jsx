@@ -4,7 +4,7 @@ import { sendOtp } from "../api/AuthenticationApi";
 import { apiBaseUrl } from "../api/settings";
 import { FaBus } from "react-icons/fa";
 import toast from "react-hot-toast";
-import Loader from "../utils/Loader";
+import Button from "../blocks/Button";
 
 const ForgotEmail = () => {
   const navigate = useNavigate();
@@ -84,13 +84,9 @@ const ForgotEmail = () => {
           </div>
 
           <div className="mb-1">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="bg-primary border-2 border-solid rounded-full px-4 py-1 text-main text-xl w-full"
-            >
-              {isLoading ? <Loader /> : "Send OTP"}
-            </button>
+            <Button type="submit" isLoading={isLoading}>
+              Sign up
+            </Button>
           </div>
 
           <div className="flex gap-2 items-center mt-2">

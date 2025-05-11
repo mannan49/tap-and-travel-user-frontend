@@ -1,20 +1,10 @@
 /* eslint-disable react/prop-types */
-import { useNavigate } from "react-router-dom";
-import { CgArrowLongRightC } from "react-icons/cg";
-import { formatDateToDayMonth, formatTime } from "./HelperFunctions";
-import { FaBusAlt } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
+import { CgArrowLongRightC } from 'react-icons/cg';
+import { formatDateToDayMonth, formatTime } from './HelperFunctions';
+import { FaBusAlt } from 'react-icons/fa';
 
-const RouteCard = ({
-  id,
-  origin,
-  destination,
-  departureTime,
-  price,
-  date,
-  route,
-  imageSrc,
-  adminName,
-}) => {
+const RouteCard = ({ id, origin, destination, departureTime, price, date, route, imageSrc, adminName }) => {
   const navigate = useNavigate();
   return (
     <div className="bg-main mt-2 p-3 shadow-md rounded-xl">
@@ -36,11 +26,7 @@ const RouteCard = ({
               <p className="app-btn text-sm mb-2 text-center">
                 {formatDateToDayMonth(date)} {formatTime(departureTime)}
               </p>
-              <p className="app-btn text-sm">
-                {route.stops.length === 0
-                  ? "Non Stop"
-                  : `Stops: ${route.stops.length}`}
-              </p>
+              <p className="app-btn text-sm">{route.stops.length - 2 === 0 ? 'Non Stop' : `Stops: ${route.stops.length - 2}`}</p>
             </div>
           </div>
         </div>

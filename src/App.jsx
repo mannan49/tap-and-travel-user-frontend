@@ -19,8 +19,10 @@ import ForgotOtpPage from "./pages/ForgotOtpPage";
 import ResetPassword from "./components/auth/ResetPassword";
 import ForgotEmail from "./components/auth/ForgotEmail";
 import SignupOtpPage from "./pages/SignupOtpPage";
+import { useStoreInitializer } from "./store/useStoreInitializer";
 
 function App() {
+  useStoreInitializer();
   return (
     <div className="App">
       <Routes>

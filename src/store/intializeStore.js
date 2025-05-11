@@ -1,15 +1,16 @@
-import { jwtDecode } from "jwt-decode";
-import { setUserId } from "./slices/userSlice";
+import { jwtDecode } from 'jwt-decode';
+import { setUserId } from './slices/userSlice';
 import { fetchBuses } from './slices/busesSlice';
-import { fetchCompanies } from "./slices/companiesSlice";
-import { fetchUser } from "./slices/userSlice";
-import { fetchTickets } from "./slices/ticketsSlice";
+import { fetchCompanies } from './slices/companiesSlice';
+import { fetchUser } from './slices/userSlice';
+import { fetchTickets } from './slices/ticketsSlice';
 
-export const initializeStore = async (dispatch) => {
+export const initializeStore = async dispatch => {
   try {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
+    if (!token) return;
     const decodedToken = jwtDecode(token);
-    const userId = decodedToken.sub;
+    const userId = decodedToken?.sub;
 
     dispatch(setUserId(userId));
     await Promise.all([
@@ -19,6 +20,6 @@ export const initializeStore = async (dispatch) => {
       dispatch(fetchTickets({ userId })).unwrap(),
     ]);
   } catch (error) {
-    console.error("Error initializing store:", error);
+    console.error('Error initializing store:', error);
   }
 };

@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FaBus } from "react-icons/fa";
 import { resetPassword } from "../api/AuthenticationApi";
-import Loader from "../utils/Loader";
+import Button from "../blocks/Button";
 
 function ResetPassword() {
   const navigate = useNavigate();
@@ -180,23 +180,16 @@ function ResetPassword() {
             </ul>
           </div>
 
-          <div className="mb-1">
-            <button
-              className="bg-primary border-2 border-solid rounded-full px-4 py-1 text-main text-xl w-full"
-              type="submit"
-              disabled={isLoading}
-            >
-              {isLoading ? <Loader /> : "Reset Password"}
-            </button>
-          </div>
-
-          <button
+          <Button type="submit" isLoading={isLoading}>
+            Reset Password
+          </Button>
+          <Button
             type="button"
-            className="bg-primary border-2 border-solid rounded-full px-4 py-1 text-main text-xl w-full mt-2"
+            className="mt-2 bg-red-600"
             onClick={() => navigate("/login")}
           >
             Back to Login
-          </button>
+          </Button>
         </form>
       </div>
     </div>

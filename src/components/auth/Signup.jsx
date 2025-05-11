@@ -6,6 +6,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import Loader from "../utils/Loader";
 import { signUpUser } from "../api/AuthenticationApi";
+import Button from "../blocks/Button";
 
 function Signup() {
   const navigate = useNavigate();
@@ -187,14 +188,10 @@ function Signup() {
           </div>
 
           <div>
-            <div className="bg-primary my-2 border-2 border-solid rounded-full px-4 py-1 text-main text-xl w-full">
-              <button
-                className="text-main text-lg w-full"
-                type="submit"
-                disabled={isLoading}
-              >
-                {isLoading ? <Loader /> : "Sign Up"}
-              </button>
+            <div className="mb-1">
+              <Button type="submit" className="mt-3" isLoading={isLoading}>
+                Sign up
+              </Button>
             </div>
             <h3 className="text-lg text-center">
               Already have an account, go to <br className="block md:hidden" />

@@ -1,11 +1,11 @@
-/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
 import { FaBus } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import Loader from "../utils/Loader";
 import { sendOtp, verifyOtp } from "../api/AuthenticationApi";
+import Button from "../blocks/Button";
 
 function OTPVerification({
   apiUrl,
@@ -17,7 +17,7 @@ function OTPVerification({
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [isLoading, setIsLoading] = useState(false);
   const inputRefs = useRef([]);
-  const [resendTimer, setResendTimer] = useState(6);
+  const [resendTimer, setResendTimer] = useState(60);
   const [canResend, setCanResend] = useState(false);
 
   useEffect(() => {
@@ -123,7 +123,7 @@ function OTPVerification({
       const result = await sendOtp({ sendOtpApiUrl, email });
       if (result.success) {
         toast.success("A new OTP has been sent to your email.");
-        setResendTimer(60); // Restart timer
+        setResendTimer(60);
         setCanResend(false);
       } else {
         toast.error(result?.message || "Failed to resend OTP.");
@@ -206,13 +206,9 @@ function OTPVerification({
             )}
           </div>
 
-          <button
-            type="submit"
-            className="w-full inline-flex justify-center whitespace-nowrap rounded-lg bg-primary px-3.5 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-950/10 hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 transition-colors duration-150"
-            disabled={isLoading}
-          >
-            {isLoading ? <Loader /> : "Verify OTP"}
-          </button>
+          <Button type="submit" className="mt-2 text-xl" isLoading={isLoading}>
+            Verify OTP
+          </Button>
 
           <h3 className="text-lg text-center mt-4">
             {bottomMessage}

@@ -1,46 +1,42 @@
 /* eslint-disable no-unused-vars */
-import { useEffect, useState } from "react";
-import BookingForm from "../forms/BookingForm";
-import RouteCard from "../utils/RouteCard";
-import { useLocation } from "react-router-dom";
-import Loader from "../utils/Loader";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from 'react';
+import BookingForm from '../forms/BookingForm';
+import RouteCard from '../utils/RouteCard';
+import { useLocation } from 'react-router-dom';
+import Loader from '../utils/Loader';
+import { useSelector } from 'react-redux';
 
 const MainContent = () => {
-  const buses = useSelector((state) => state.buses.data);
-  const companies = useSelector((state) => state.companies.data);
-  const status = useSelector((state) => state.buses.status);
+  const buses = useSelector(state => state.buses.data);
+  const companies = useSelector(state => state.companies.data);
+  const status = useSelector(state => state.buses.status);
 
   const [filteredBuses, setFilteredBuses] = useState([]);
-  const [selectedFilter, setSelectedFilter] = useState("All");
+  const [selectedFilter, setSelectedFilter] = useState('All');
   const location = useLocation();
   const [showAll, setShowAll] = useState(false);
   const [visibleBuses, setVisibleBuses] = useState([]);
 
   useEffect(() => {
     let updatedBuses = [...buses];
-    if (selectedFilter === "All") {
+    if (selectedFilter === 'All') {
       setFilteredBuses(updatedBuses);
-    } else if (selectedFilter === "LowToHigh") {
+    } else if (selectedFilter === 'LowToHigh') {
       updatedBuses.sort((a, b) => a.fare.actualPrice - b.fare.actualPrice);
-    } else if (selectedFilter === "HighToLow") {
+    } else if (selectedFilter === 'HighToLow') {
       updatedBuses.sort((a, b) => b.fare.actualPrice - a.fare.actualPrice);
-    } else if (selectedFilter === "AscendingDate") {
+    } else if (selectedFilter === 'AscendingDate') {
       updatedBuses.sort((a, b) => new Date(a.date) - new Date(b.date));
-    } else if (selectedFilter === "DescendingDate") {
+    } else if (selectedFilter === 'DescendingDate') {
       updatedBuses.sort((a, b) => new Date(b.date) - new Date(a.date));
-    } else if (selectedFilter === "Today") {
+    } else if (selectedFilter === 'Today') {
       const today = new Date();
       const todayDate = today.toISOString().slice(0, 10);
 
-      updatedBuses = updatedBuses.filter(
-        (bus) => new Date(bus.date).toISOString().slice(0, 10) === todayDate
-      );
-      console.log("UPDATED BUSES", updatedBuses);
+      updatedBuses = updatedBuses.filter(bus => new Date(bus.date).toISOString().slice(0, 10) === todayDate);
+      console.log('UPDATED BUSES', updatedBuses);
     } else {
-      updatedBuses = updatedBuses.filter(
-        (bus) => bus.adminName === selectedFilter
-      );
+      updatedBuses = updatedBuses.filter(bus => bus.adminName === selectedFilter);
     }
 
     setFilteredBuses(updatedBuses);
@@ -56,16 +52,14 @@ const MainContent = () => {
   };
   return (
     <div className="p-4">
-      {location.pathname === "/" && <BookingForm />}
+      {location.pathname === '/' && <BookingForm />}
       <div className="grid grid-cols-10 justify-center items-center mt-4">
-        <h1 className="col-span-7 font-bold text-center mt-4">
-          Offered Routes
-        </h1>
+        <h1 className="col-span-7 font-bold text-center mt-4">Offered Routes</h1>
         <div className="col-span-3">
           Choose Filter
           <select
-            className="border border-gray-300 rounded-xl p-2"
-            onChange={(e) => setSelectedFilter(e.target.value)}
+            className="border border-gray-300 rounded-xl py-2 px-4"
+            onChange={e => setSelectedFilter(e.target.value)}
             value={selectedFilter}
           >
             <option value="All">All</option>
@@ -75,7 +69,7 @@ const MainContent = () => {
             <option value="DescendingDate">Date (Descending)</option>
             <option value="Today">Today</option>
             {companies.map((company, index) => (
-              <option key={index} value={company.name}>
+              <option key={index} value={company?.name}>
                 {company.name}
               </option>
             ))}
@@ -83,7 +77,7 @@ const MainContent = () => {
         </div>
       </div>
 
-      {status === "loading" || status == "idle" ? (
+      {status === 'loading' || status == 'idle' ? (
         <Loader />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
